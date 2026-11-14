@@ -1,0 +1,13 @@
+rank,item_id,score,reason,suggested_action,slice,evidence_path,reviewer,reviewer_decision,override_value,review_note,reviewed_at
+1,CASE-12,2.53,RETENTION_EXCESSIVE;RAW_PII_IN_CLOUD;NO_ENCRYPTION;NO_LAWFUL_BASIS,HOLD,VN,,Chu Thiên Phú,approve,,"dùng lợi ích hợp pháp (VN không có căn cứ này), lưu 3650 ngày, raw trên cloud không mã hoá",2026-11-14T08:18:05.416Z
+2,CASE-09,2.51,AMBIGUOUS_NEEDS_LEGAL;MINORS,HOLD,IN,,Chu Thiên Phú,approve,,"có thể có trẻ em, ghi chú về luật DPDP sắp hiệu lực",2026-11-14T08:18:05.416Z
+3,CASE-01,2.5,NO_LAWFUL_BASIS,HOLD,VN,,Chu Thiên Phú,approve,," dùng lợi ích hợp pháp, không có consent",2026-11-14T08:18:05.416Z
+4,CASE-07,2.5,XBORDER_NO_IMPACT_ASSESSMENT,HOLD,VN,,Chu Thiên Phú,approve,,chuyển sang SG mà không có hồ sơ đánh giá tác động,2026-11-14T08:18:05.416Z
+5,CASE-04,2.01,NO_LAWFUL_BASIS;DPIA_MISSING,HOLD,EU,,Chu Thiên Phú,approve,,"quay video trong cabin, chưa có DPIA, chưa có LIA",2026-11-14T08:18:05.416Z
+6,CASE-08,2.01,AMBIGUOUS_NEEDS_LEGAL;NO_LAWFUL_BASIS,HOLD,EU,,Chu Thiên Phú,approve,,"không rõ căn cứ pháp lý, chưa rõ vendor là processor hay joint controller",2026-11-14T08:18:05.416Z
+7,CASE-02,2.0,XBORDER_NO_MECHANISM,HOLD,EU,,Chu Thiên Phú,approve,, chuyển dữ liệu ra nước không đủ bảo vệ mà không có cơ chế chuyển,2026-11-14T08:18:05.416Z
+8,CASE-11,2.0,AMBIGUOUS_NEEDS_LEGAL,HOLD,US-CA,,Chu Thiên Phú,escalate,,"dữ liệu vị trí chính xác, chưa rõ công ty có thuộc phạm vi CCPA không",2026-11-14T08:18:05.416Z
+9,CASE-03,1.52,RETENTION_UNBOUNDED;RAW_PII_IN_CLOUD;CONSENT_INVALID,REWORK,VN,,Chu Thiên Phú,approve,,"consent gộp, không rút lại được, retention không giới hạn, raw chứa mặt trên cloud",2026-11-14T08:18:05.416Z
+10,CASE-05,1.0,NOTICE_MISSING,REWORK,US-CA,,Chu Thiên Phú,approve,,thiếu notice khi thu thập,2026-11-14T08:18:05.416Z
+11,CASE-06,0.0,no rule fired,GO,SG,,Chu Thiên Phú,approve,,lợi ích hợp pháp đã có đánh giá,2026-11-14T08:18:05.416Z
+12,CASE-10,0.0,no rule fired,GO,EU,,Chu Thiên Phú,approve,,"EU: có LIA, chuyển dữ liệu theo adequacy + có TIA, đã có DPIA, lưu 90 ngày, có mã hoá",2026-11-14T08:18:05.416Z

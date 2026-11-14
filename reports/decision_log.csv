@@ -1,0 +1,4 @@
+ts,scope,status,canonical,reason_code,reason,owner,evidence
+2026-11-14T07:59:23+00:00,t09,HOLD,HOLD,GATE_HOLD,"8 HOLD, 2 REWORK, 2 GO; 12 case(s) still awaiting legal sign-off",Chu Thien Phu (Privacy Lead),out/poc/decisions.csv;out/poc/checklist.csv;out/poc/audit_log.jsonl
+2026-11-14T08:19:52+00:00,t09,HOLD,HOLD,GATE_HOLD,"8 HOLD, 2 REWORK, 2 GO; 0 case(s) still awaiting legal sign-off",Chu Thien Phu (Privacy Lead),out/poc/decisions.csv;out/poc/checklist.csv;out/poc/audit_log.jsonl
+2026-11-14T08:22:28+00:00,t09,HOLD,HOLD,GATE_HOLD,"8 HOLD, 2 REWORK, 2 GO; 0 case(s) still awaiting legal sign-off",Chu Thien Phu (Privacy Lead),out/poc/decisions.csv;out/poc/checklist.csv;out/poc/audit_log.jsonl
