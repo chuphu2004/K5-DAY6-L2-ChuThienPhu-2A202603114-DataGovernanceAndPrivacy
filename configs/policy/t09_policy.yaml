@@ -1,0 +1,206 @@
+# T09 policy rules — teaching material, NOT legal advice. Every rule cites a source and is versioned.
+# Built from fixtures/t09_privacy_gate/rules/policy_example.yaml (that file is hash-locked, so it is copied here).
+# `when` is a boolean expression over the case JSON (dotted paths, ==, in, and/or/not; no function calls).
+# Missing fields read as null. A rule whose effective_date is after params.as_of_date is reported as
+# "upcoming" only and does not change the decision. Precedence: HOLD > REWORK > GO.
+policy_version: t09-1.0
+policy_date: 2026-11-14
+owner: "Chu Thien Phu (Privacy Lead)"
+covered_markets: [EU, VN, US-CA, SG, IN]   # any other market -> HOLD AMBIGUOUS_NEEDS_LEGAL
+
+rules:
+  # ---------------------------------------------------------------- all markets
+  - id: R-GEN-AMB
+    markets: ['*']
+    when: "ambiguity_notes not in [null, '']"
+    decision: HOLD
+    reason_code: AMBIGUOUS_NEEDS_LEGAL
+    note: 'Open legal question in the case file: escalate to DPO/legal, never auto-GO.'
+    source: {doc: 'Internal policy (lab protocol)', ref: 'policy_example.yaml header: Ambiguity => HOLD + escalate'}
+    confidence: high
+  - id: R-GEN-MIN
+    markets: ['*']
+    when: "minors_possible"
+    decision: HOLD
+    reason_code: MINORS
+    note: 'Internal precaution applied in every market, independent of whether a local children-data law is in force yet (e.g. DPDP s.9 from 2027-05-13).'
+    source: {doc: 'Internal policy (precautionary); informed by GDPR Art. 8, Luật 91/2025 (trẻ em), DPDP Act 2023 s.9', ref: 'children data: age-gating / guardian consent review'}
+    confidence: medium
+    needs_legal_review: true
+  - id: R-GEN-NOTICE
+    markets: ['*']
+    when: "not notice_given"
+    decision: REWORK
+    reason_code: NOTICE_MISSING
+    source: {doc: 'GDPR Art. 13; CCPA Cal. Civ. Code §1798.100(a)', ref: 'notice at collection'}
+    confidence: high
+  - id: R-RET-01
+    markets: ['*']
+    when: "retention_days is null"
+    decision: REWORK
+    reason_code: RETENTION_UNBOUNDED
+    source: {doc: 'GDPR (EUR-Lex)', ref: 'Art. 5(1)(e) storage limitation', url: 'https://eur-lex.europa.eu/eli/reg/2016/679/oj'}
+    confidence: high
+  - id: R-RET-02
+    markets: ['*']
+    when: "retention_days is not null and retention_days > 365"
+    decision: REWORK
+    reason_code: RETENTION_EXCESSIVE
+    note: '365 days is an internal policy ceiling for ADAS training video, frozen before eval.'
+    source: {doc: 'GDPR (EUR-Lex)', ref: 'Art. 5(1)(e) storage limitation'}
+    confidence: medium
+  - id: R-STO-01
+    markets: ['*']
+    when: "storage.raw_retained and storage.location == 'cloud'"
+    decision: REWORK
+    reason_code: RAW_PII_IN_CLOUD
+    source: {doc: 'GDPR Art. 5(1)(c), Art. 25', ref: 'data minimisation, privacy by design'}
+    confidence: medium
+  - id: R-STO-02
+    markets: ['*']
+    when: "not storage.encryption_at_rest"
+    decision: REWORK
+    reason_code: NO_ENCRYPTION
+    source: {doc: 'GDPR Art. 32; PDPA (SG) s.24', ref: 'security of processing'}
+    confidence: high
+
+  # ---------------------------------------------------------------- EU (GDPR)
+  - id: R-XB-01
+    markets: [EU]
+    when: "transfer.cross_border and transfer.mechanism in [null, 'unknown', 'none']"
+    decision: HOLD
+    reason_code: XBORDER_NO_MECHANISM
+    source: {doc: 'GDPR (EUR-Lex)', ref: 'Chapter V, Art. 44-49', url: 'https://eur-lex.europa.eu/eli/reg/2016/679/oj'}
+    confidence: high
+  - id: R-EU-BASIS
+    markets: [EU]
+    when: "lawful_basis in [null, 'unknown', 'n/a', 'none']"
+    decision: HOLD
+    reason_code: NO_LAWFUL_BASIS
+    source: {doc: 'GDPR', ref: 'Art. 6(1)'}
+    confidence: high
+  - id: R-EU-LIA
+    markets: [EU]
+    when: "lawful_basis == 'legitimate_interest' and not lia_done"
+    decision: HOLD
+    reason_code: NO_LAWFUL_BASIS
+    note: 'Legitimate interest needs a documented balancing test (LIA).'
+    source: {doc: 'GDPR', ref: 'Art. 6(1)(f); EDPB Guidelines 01/2020 connected vehicles'}
+    confidence: medium
+  - id: R-EU-DPIA
+    markets: [EU]
+    when: "not dpia_done"
+    decision: HOLD
+    reason_code: DPIA_MISSING
+    source: {doc: 'GDPR', ref: 'Art. 35 (systematic monitoring of public areas / large scale)'}
+    confidence: high
+  - id: R-EU-CONSENT
+    markets: [EU]
+    when: "lawful_basis == 'consent' and (not consent.granular or not consent.withdrawable)"
+    decision: REWORK
+    reason_code: CONSENT_INVALID
+    source: {doc: 'GDPR', ref: 'Art. 4(11), Art. 7(3)'}
+    confidence: high
+  - id: R-EU-CREC
+    markets: [EU]
+    when: "lawful_basis == 'consent' and not consent.record_available"
+    decision: REWORK
+    reason_code: CONSENT_RECORD_MISSING
+    source: {doc: 'GDPR', ref: 'Art. 7(1) controller must demonstrate consent'}
+    confidence: high
+
+  # ---------------------------------------------------------------- VN (Luật 91/2025 + NĐ 356/2025)
+  # Teaching examples from policy_example.yaml (drafted 2026-11-13); article numbers need legal review.
+  - id: R-VN-01
+    markets: [VN]
+    when: "lawful_basis not in ['consent', 'contract', 'legal_obligation', 'vital_interest', 'public_task']"
+    decision: HOLD
+    reason_code: NO_LAWFUL_BASIS
+    note: 'VN has no legitimate-interest basis; processing without consent needs one of the listed exceptions.'
+    source: {doc: 'Luật Bảo vệ dữ liệu cá nhân 91/2025/QH15', ref: 'Đ.9 (consent), Đ.19 (cases not requiring consent)', url: 'https://thuvienphapluat.vn/van-ban/Bo-may-hanh-chinh/Luat-Bao-ve-du-lieu-ca-nhan-2025-so-91-2025-QH15-625628.aspx'}
+    version_date: 2026-11-13
+    confidence: medium
+    needs_legal_review: true
+  - id: R-VN-02
+    markets: [VN]
+    when: "transfer.cross_border and not transfer.transfer_impact_assessment"
+    decision: HOLD
+    reason_code: XBORDER_NO_IMPACT_ASSESSMENT
+    note: 'Cross-border transfer impact-assessment dossier must be prepared and filed with the authority within 60 days.'
+    source: {doc: 'Luật 91/2025/QH15 + Nghị định 356/2025/NĐ-CP', ref: 'Luật 91 Đ.21 (transfer impact assessment); NĐ 356 dossier rules'}
+    version_date: 2026-11-13
+    confidence: medium
+    needs_legal_review: true
+  - id: R-VN-03
+    markets: [VN]
+    when: "not dpia_done"
+    decision: HOLD
+    reason_code: DPIA_MISSING
+    source: {doc: 'Luật 91/2025/QH15 + Nghị định 356/2025/NĐ-CP', ref: 'Luật 91 Đ.20 (processing impact assessment, filed within 60 days), Đ.22'}
+    version_date: 2026-11-13
+    confidence: medium
+    needs_legal_review: true
+  - id: R-VN-04
+    markets: [VN]
+    when: "lawful_basis == 'consent' and (not consent.granular or not consent.withdrawable)"
+    decision: REWORK
+    reason_code: CONSENT_INVALID
+    note: 'Silence, pre-ticked boxes or bundled consent are not valid consent; consent must be specific and withdrawable.'
+    source: {doc: 'Luật 91/2025/QH15', ref: 'Đ.9 (voluntary, explicit, specific), Đ.10 (withdrawal)'}
+    version_date: 2026-11-13
+    confidence: medium
+    needs_legal_review: true
+  - id: R-VN-05
+    markets: [VN]
+    when: "lawful_basis == 'consent' and not consent.record_available"
+    decision: REWORK
+    reason_code: CONSENT_RECORD_MISSING
+    source: {doc: 'Luật 91/2025/QH15', ref: 'Đ.9 (consent must be provable)'}
+    confidence: medium
+    needs_legal_review: true
+
+  # ---------------------------------------------------------------- US-CA (CCPA/CPRA: no lawful-basis concept)
+  - id: R-CA-SPI
+    markets: [US-CA]
+    when: "'precise_location' in data_types and not notice_given"
+    decision: REWORK
+    reason_code: NOTICE_MISSING
+    note: 'Precise geolocation is sensitive PI: notice + right to limit use.'
+    source: {doc: 'CCPA/CPRA', ref: 'Cal. Civ. Code §1798.121, §1798.140(ae)'}
+    confidence: medium
+
+  # ---------------------------------------------------------------- SG (PDPA)
+  - id: R-SG-LI
+    markets: [SG]
+    when: "lawful_basis == 'legitimate_interest' and not li_assessment_done"
+    decision: HOLD
+    reason_code: NO_LAWFUL_BASIS
+    source: {doc: 'PDPA 2012 (SG)', ref: 'First Schedule Part 3 (legitimate interests exception requires assessment)'}
+    confidence: medium
+  - id: R-SG-BASIS
+    markets: [SG]
+    when: "lawful_basis in [null, 'unknown', 'n/a', 'none']"
+    decision: HOLD
+    reason_code: NO_LAWFUL_BASIS
+    source: {doc: 'PDPA 2012 (SG)', ref: 's.13 consent obligation'}
+    confidence: medium
+
+  # ---------------------------------------------------------------- IN (DPDP Act 2023: core duties not yet in force)
+  - id: R-IN-CREC
+    markets: [IN]
+    when: "lawful_basis == 'consent' and not consent.record_available"
+    decision: REWORK
+    reason_code: CONSENT_RECORD_MISSING
+    effective_date: 2027-05-13
+    source: {doc: 'DPDP Act 2023 + DPDP Rules 2025', ref: 's.6(10) burden of proof of consent'}
+    confidence: medium
+    needs_legal_review: true
+  - id: R-IN-BASIS
+    markets: [IN]
+    when: "lawful_basis not in ['consent', 'legitimate_use']"
+    decision: HOLD
+    reason_code: NO_LAWFUL_BASIS
+    effective_date: 2027-05-13
+    source: {doc: 'DPDP Act 2023', ref: 's.4 (consent or certain legitimate uses), s.7'}
+    confidence: medium
+    needs_legal_review: true
