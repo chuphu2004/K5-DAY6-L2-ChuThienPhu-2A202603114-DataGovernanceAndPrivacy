@@ -12,9 +12,9 @@
 | Challenge | T09 · Multi-Market Privacy Decision Gate |
 | Thành viên + vai trò | 1. Chu Thien Phu — tất cả vai trò (integrator, policy engine, QA/test, legal reviewer, report) |
 | Git URL | https://github.com/chuphu2004/K5-DAY6-L2-ChuThienPhu-2A202603114-DataGovernanceAndPrivacy |
-| Tag `demo-180m` (commit) | TODO |
-| Tag `final-24h` (commit) | TODO |
-| Deadline (giờ VN) | TODO |
+| Tag `demo-180m` (commit) | chưa tạo — tạo sau khi có kết quả eval với ground truth |
+| Tag `final-24h` (commit) | chưa tạo — tạo sau khi có kết quả eval với ground truth |
+| Deadline (giờ VN) | 23:59 ngày 14/11/2026 (12h đêm) |
 
 ## 01 · Problem statement
 
@@ -91,15 +91,15 @@
 
 Consent-only cho GO 4 case mà PoC xác định có rủi ro (CASE-02, 03, 07, 09) và chặn 2 case PoC cho GO (CASE-06, 10).
 
-**Bảng 1 · Baseline vs PoC** — TODO: dán output của
+**Bảng 1 · Baseline vs PoC** — chờ ground truth: dán output của
 `python -m src.compare reports/metrics_baseline.json reports/metrics_poc.json` sau khi có overlay `gt/`.
 Chưa có GT nên không điền số nào ở đây.
 
 | Metric (unit) | Baseline | PoC | Δ & chú thích |
 |---|---|---|---|
-| Primary: Critical-miss Rate (lower) | TODO (script) | TODO (script) | split=eval, N=4 |
-| Guardrail: False HOLD rate ≤ 0.5 | TODO (script) | TODO (script) | All-HOLD: critical-miss = 0 nhưng FAIL guardrail theo định nghĩa |
-| Reason-code match (risky) | TODO (script) | TODO (script) | |
+| Primary: Critical-miss Rate (lower) | chờ GT (script) | chờ GT (script) | split=eval, N=4 |
+| Guardrail: False HOLD rate ≤ 0.5 | chờ GT (script) | chờ GT (script) | All-HOLD: critical-miss = 0 nhưng FAIL guardrail theo định nghĩa |
+| Reason-code match (risky) | chờ GT (script) | chờ GT (script) | |
 | Runtime / 12 case | 0.059 s | 0.122 s | `run_info.json`, CPU x86_64, Python 3.11.0rc1 |
 
 ## 05 · Evaluation protocol
@@ -124,7 +124,7 @@ python -m src.evaluate --track t09 --pred out/baseline_allhold/decisions.csv --r
 | Market EU (01-dev: 02, 04, 08; eval: 10) | 4 | 3 HOLD, 1 GO (CASE-02) | 3 HOLD, 1 GO (CASE-10) | baseline GO nhầm case chuyển dữ liệu không cơ chế, HOLD nhầm case đủ điều kiện |
 | Market VN (01, 03, 07, 12) | 4 | 2 HOLD, 2 GO | 3 HOLD, 1 REWORK | VN không có lợi ích hợp pháp; chuyển dữ liệu cần hồ sơ đánh giá tác động |
 | Market US-CA / SG / IN (05, 06, 09, 11) | 4 | 3 HOLD, 1 GO | 2 HOLD, 1 REWORK, 1 GO | CCPA không có lawful basis → baseline HOLD CASE-05 vì lý do sai |
-| Slice theo gold_decision | — | TODO (script) | TODO (script) | evaluator in sẵn |
+| Slice theo gold_decision | — | chờ GT (script) | chờ GT (script) | evaluator in sẵn |
 
 - **Failure case 1 — kết luận hợp pháp chỉ dựa vào consent (CASE-02, EU).** Metadata: `consent.obtained/granular/
   withdrawable/record_available = true`, nhưng `transfer.cross_border = true`, `destination = "non-adequate third
@@ -208,7 +208,7 @@ Các commit của `loversky02` và `Tin Duong` trong lịch sử là của start
 
 **Bảng 3 · Checklist chốt khi nộp**
 
-- [ ] Link repo và tag cuối cùng trong README; input mẫu không chứa PII thật.
+- [ ] Link repo (có) và tag cuối cùng (chưa tạo) trong report mục 00; input mẫu không chứa PII thật.
 - [x] Đúng 1 lệnh run, 1 lệnh evaluate, 1 lệnh tests; không cần download khi chạy.
 - [ ] Có baseline/PoC metrics (chờ overlay `gt/`), [x] ≥1 failure case, [x] reviewer evidence, [x] decision log.
 - [x] Có license/source provenance, data splits, seed, offline environment, GT/eval N.
